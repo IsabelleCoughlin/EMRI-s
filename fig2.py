@@ -57,8 +57,10 @@ stop_plunge.terminal = True
 stop_plunge.direction = -1
 
 sol = solve_ivp(rhs, [0, 1e15], [a0, e0], events=stop_plunge, rtol=1e-9, atol=1e-12)
-t_arr, e_arr = sol.t, sol.y[0]
-a_arr = a_of_e(e_arr)
+# solve_ivp returns the state vector as y[0]=a and y[1]=e; make sure we keep them in that order
+t_arr = sol.t
+a_arr = sol.y[0]
+e_arr = sol.y[1]
 
 # FIXME: Change to use compromise between radial and azimuthal
 # Currently it is just a keplerian radial orbit i think
