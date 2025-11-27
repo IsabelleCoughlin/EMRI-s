@@ -8,6 +8,7 @@ from few.trajectory.ode.flux import KerrEccEqFlux
 from scipy.interpolate import CubicSpline
 from few import get_file_manager
 from scipy.integrate import cumulative_trapezoid
+import numpy as np
 
 '''
 Calculating FEW waveform to develop the sensitivity of LISA instrument

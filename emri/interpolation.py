@@ -1,4 +1,6 @@
 from scipy.interpolate import interp1d
+import numpy as np
+from emri.constants import *
 
 def interpolate_PM(a_arr, e_arr, t_arr):
 
@@ -12,7 +14,7 @@ def interpolate_PM(a_arr, e_arr, t_arr):
     t_to_plunge_yr_interpolated = (t_interpolated[-1] - t_interpolated) / yr
     return a_interpolated, e_interpolated, t_interpolated, t_to_plunge_yr_interpolated
 
-def interpolation_PN(e_arr, nu_arr, phi_arr, gamma_arr, alpha_arr, t_arr):
+def interpolate_PN(e_arr, nu_arr, phi_arr, gamma_arr, alpha_arr, t_arr):
     f1 = interp1d(t_arr, e_arr)
     f2 = interp1d(t_arr, nu_arr)
     f3 = interp1d(t_arr, phi_arr)

@@ -8,6 +8,7 @@ emri/events.py
 emri/harmonics.py
 emri/integrator.py
 emri/interpolation.py
+emri/params.py
 emri/peters.py
 emri/plotting.py
 emri_s.egg-info/PKG-INFO
