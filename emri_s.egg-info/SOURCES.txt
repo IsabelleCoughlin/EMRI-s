@@ -1,6 +1,7 @@
 README.md
 setup.py
 emri/LISA_sensitivity.py
+emri/PN.py
 emri/SNR.py
 emri/__init__.py
 emri/constants.py

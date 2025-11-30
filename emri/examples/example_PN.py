@@ -34,4 +34,4 @@ e_interpolated, nu_interpolated, phi_interpolated, gamma_interpolated, alpha_int
 
 #plot_e(t_to_plunge_yr_interpolated, e_interpolated)
 #plot_characteristic_strain_PN(t_to_plunge_yr_interpolated, e_interpolated, nu_interpolated, phi_interpolated, gamma_interpolated, p)
-plot_SNR_PN(phi_interpolated, nu_interpolated, gamma_interpolated, e_interpolated, t_interpolated, p, 10, 10, 1000)
+#plot_SNR_PN(phi_interpolated, nu_interpolated, gamma_interpolated, e_interpolated, t_interpolated, p, 10, 10, 1000)
