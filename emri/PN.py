@@ -119,7 +119,7 @@ def dnu_dt_scalar(phi, nu, gamma, e, p):
     lambda_var = p.lambda_var
     X = p.X
     
-    zero_term = np.maximum(1e-16, 1 - e**2)
+    zero_term = np.maximum(1e-12, 1 - e**2)
     omM = 2*np.pi*M*nu
     first_term = (96/(10*np.pi))*(mu/(M**3))*(omM**(11/3))*zero_term**(-4.5)
     a1 = 1 + (73/24)*e**2 + (37/96)*e**4

@@ -28,3 +28,16 @@ def h_det(f):
     Return FEW Waveform sensitivity
     '''
     return np.sqrt(5*f*(get_sensitivity(f)))
+
+def analytical_sensitivity(f):
+    '''
+    Analytical Waveform sensitivity
+    '''
+    f = np.array(f, dtype=float)
+    f[f <= 1e-12] = 1e-12
+    S_inst = (9.18*10**(-52)/(f**4)) + (1.59*(10**(-41))) + (9.18*(10**(-38)*(f**2)))
+    S_ex_gal = 4.2*(10**(-47))*(f**(-7/3))
+    dN = 2*(10**(-3))*((1/f)**(11/3))
+    S_gal = 2.1*(10**(-45))*((f)**(-7/3))
+    S_inst_gal = np.minimum(S_inst/math.exp(-1.5/yr)*dN, S_inst + S_gal)
+    return S_inst_gal + S_ex_gal
