@@ -29,7 +29,7 @@ nu_2 = (1/(2*np.pi)) * np.sqrt(p.M_seconds/ a0_2**3)
 #print(nu_0)
 #print(nu_2)
 
-y0 = [0, nu_2, 0, 0.995, 0.0]
+y0 = [0, nu_2, 0, 0.996, 0.0]
 
 # Integrate and Interpolate
 sol =  integrate_trajectory(deriv_PN, y0, (0, default_integration_time), plunge_event_PN, p)
