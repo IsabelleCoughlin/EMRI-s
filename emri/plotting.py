@@ -5,6 +5,7 @@ from .harmonics import *
 from emri.LISA_sensitivity import *
 from .SNR import *
 from .PN import *
+from .integrator import *
 
 
 def plot_SNR(a_arr, e_arr, t_arr,p,  N_harm_show=10, N_harm_sum=1000, step = 1000):
@@ -153,8 +154,7 @@ def plot_SNR_PN(phi_arr, nu_arr, gamma_arr, e_arr, t_arr, p, N_harm_show=10, N_h
         plt.loglog(ttp, SNR_harm[n], '--', lw=1, color=colors[n])
 
     # Plot total
-    plt.loglog(ttp, SNR_tot, 'k', lw=2,
-               label=f'Total SNR (sum to n={N_harm_sum})')
+    plt.loglog(ttp, SNR_tot, 'k', lw=2,label=f'Total SNR (sum to n={N_harm_sum})')
 
     plt.xlabel('Time to plunge (yr)')
     plt.ylabel('SNR for 1-yr observation')
@@ -169,3 +169,43 @@ def plot_SNR_PN(phi_arr, nu_arr, gamma_arr, e_arr, t_arr, p, N_harm_show=10, N_h
 
 
 
+def plot_nu_LSO(p):
+    plt.figure(figsize=(7, 5))
+
+    # LSO curve
+    e_vals = np.linspace(0.0, 0.9, 400)
+    plt.plot(e_vals, nu_LSO(e_vals, p), 'b--', label='LSO')
+
+    ecc_list = [0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50]
+
+    for e_LSO in ecc_list:
+        nu0 = nu_LSO(e_LSO, p)
+        y0 = [e_LSO, nu0]
+
+        # integrate backwards in time from t=0 (LSO) to earlier times (negative)
+        t_span = (0.0, -10.0 * yr)  # ~10 years backward
+        sol = integrate_trajectory(deriv_PN, y0, t_span, p=p)#solve_ivp(deriv_PN, t_span, y0, rtol=1e-9, atol=1e-12, max_step=1e5)
+
+        
+        t_array = sol.t
+        e_arr, nu_arr = sol.y
+
+        # plot the ν(e) trajectory
+        plt.plot(e_arr, nu_arr, color='magenta', lw=1.5)
+
+        # mark 10, 5, 2, 1 years BEFORE plunge (negative times)
+        for T in [10, 5, 2, 1]:
+            t_target = -T * yr
+            if not (np.min(t_array) <= t_target <= np.max(t_array)):
+                continue
+            idx = np.argmin(np.abs(t_array - t_target))
+            plt.plot(e_arr[idx], nu_arr[idx], 'o', color='blue', ms=3)
+
+    plt.xlabel("eccentricity")
+    plt.ylabel("orbital frequency (Hz)")
+    plt.ylim(5e-4, 2.5e-3)
+    plt.xlim(0.0, 0.7)
+    plt.grid(alpha=0.3)
+    plt.title("ν–e evolution for 1 M⊙ into 10⁶ M⊙ MBH (non-spinning)")
+    plt.legend()
+    plt.show()

@@ -157,3 +157,9 @@ def h_n_PN(n, e, nu, phi, gamma, p):
          * (2*np.pi*nu)**(2/3)
     
     return (2/n) * np.sqrt(g_n_e(n, e)) * h0
+
+def nu_LSO(e, p):
+    M = p.M_seconds
+    
+    p_lso = 6.0 + 2.0 * e
+    return (1.0 / (2.0 * np.pi * M)) * ((1.0 - e**2) / p_lso) ** 1.5
