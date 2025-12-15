@@ -127,7 +127,14 @@ def dnu_dt_scalar(phi, nu, gamma, e, p):
     c1 = (73/12) + (1211/24)*e**2 + (3143/96)*e**4 + (65/64)*e**6
     return first_term*(a1*(1 - e**2) + omM**(2/3)*b1 - omM*X*np.cos(lambda_var)*zero_term**(-0.5)*c1)
 
+def deriv_PN_reduced(t, y, p):
+    e, nu = y
 
+    # compute dnu/dt and de/dt using the same formulas as the full PN system
+    dnu = dnu_dt_PN(phi=0.0, nu=nu, gamma=0.0, e=e, p=p)     # or refactor dnu_dt to not need phi/gamma
+    de  = de_dt_PN(phi=0.0, nu=nu, gamma=0.0, e=e, p=p)
+
+    return [de, dnu]
 
 def deriv_PN(t,y, p):
     
@@ -149,11 +156,11 @@ def E_dot_n_PN(n, nu, e, p):
     return (32/5.0) * p.mu_seconds**2 * p.M_seconds**(4/3) * (2*np.pi*nu)**(10/3) * g_n_e(n, e)
 
 def h_c_n_PN(n, e, nu, phi, gamma, p):
-    return (1/(np.pi*(D/c))) * np.sqrt(2 * E_dot_n(E_dot_n(n, nu, e, p)) / f_dot(n, e, nu, phi, gamma, p))
+    return (1/(np.pi*(p.D/c))) * np.sqrt(2 * E_dot_n_PN(n, nu, e, p) / f_dot_PN(n, e, nu, phi, gamma, p))
 
 def h_n_PN(n, e, nu, phi, gamma, p):
     # h0 with a eliminated using Kepler's law
-    h0 = np.sqrt(32/5)  * (p.M_seconds**(2/3)) * p.mu_seconds / (D/c) \
+    h0 = np.sqrt(32/5)  * (p.M_seconds**(2/3)) * p.mu_seconds / (p.D/c) \
          * (2*np.pi*nu)**(2/3)
     
     return (2/n) * np.sqrt(g_n_e(n, e)) * h0

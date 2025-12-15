@@ -9,6 +9,8 @@ from scipy.interpolate import CubicSpline
 from few import get_file_manager
 from scipy.integrate import cumulative_trapezoid
 import numpy as np
+import math
+from emri.constants import *
 
 '''
 Calculating FEW waveform to develop the sensitivity of LISA instrument
@@ -40,4 +42,8 @@ def analytical_sensitivity(f):
     dN = 2*(10**(-3))*((1/f)**(11/3))
     S_gal = 2.1*(10**(-45))*((f)**(-7/3))
     S_inst_gal = np.minimum(S_inst/math.exp(-1.5/yr)*dN, S_inst + S_gal)
-    return S_inst_gal + S_ex_gal
+    s = S_inst_gal + S_ex_gal
+    return np.sqrt(5*f*(s))
+
+
+

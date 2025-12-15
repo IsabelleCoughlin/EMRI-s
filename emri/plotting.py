@@ -138,6 +138,87 @@ def plot_characteristic_strain_PN(t_to_plunge_yr_interpolated, e_interpolated, n
     plt.xlim(10**-6, 1)
     plt.grid(True)
     plt.show()
+
+def plot_characteristic_strain_PN_by_n(
+    t_to_plunge_yr_interpolated,
+    e_interpolated,
+    nu_interpolated,
+    phi_interpolated,
+    gamma_interpolated,
+    p,
+    n_list=(1, 3, 9),                  # <-- choose harmonics here
+    time_arrays=(10, 5, 2, 1),          # <-- years-to-plunge markers
+    t_window_yr=None,                   # e.g. (0, 10) to show last 10 yrs only
+    show_markers=True,
+):
+    # ---- choose which portion of the trajectory to use ----
+    ttp = np.asarray(t_to_plunge_yr_interpolated)
+    mask = np.isfinite(ttp)
+
+    if t_window_yr is not None:
+        tmin, tmax = t_window_yr
+        mask &= (ttp >= tmin) & (ttp <= tmax)
+
+    e     = np.asarray(e_interpolated)[mask]
+    nu    = np.asarray(nu_interpolated)[mask]
+    phi   = np.asarray(phi_interpolated)[mask]
+    gamma = np.asarray(gamma_interpolated)[mask]
+    ttp   = ttp[mask]
+
+    # indices for marker times (computed in the masked arrays)
+    idxs = [np.argmin(np.abs(ttp - T)) for T in time_arrays]
+
+    # ---- plot ----
+    plt.figure(figsize=(8, 6))
+
+    # plot each requested harmonic as a parametric curve in time
+    for n in n_list:
+        # compute arrays along trajectory
+        f_arr = np.array([f_orb_PN(n, phi[i], nu[i], gamma[i], e[i], p) for i in range(len(nu))])
+        f_dot_arr = np.array([abs(f_dot_PN(n, e[i], nu[i], phi[i], gamma[i], p)) for i in range(len(nu))])
+        h_arr = np.array([h_n_PN(n, e[i], nu[i], phi[i], gamma[i], p) for i in range(len(nu))])
+
+        # characteristic strain along trajectory
+        hc_arr = np.where(
+            (f_dot_arr > 0) & np.isfinite(f_dot_arr) & np.isfinite(f_arr) & (f_arr > 0),
+            #h_arr * np.sqrt(2 * f_arr**2 / f_dot_arr),
+            h_c_n_PN(n, e, nu, phi, gamma, p),
+            np.nan
+        )
+
+        valid = np.isfinite(hc_arr) & (f_arr > 0)
+        plt.loglog(f_arr[valid], hc_arr[valid], lw=1.6, label=f"n={n}")
+
+        # markers at specific years-to-plunge
+        if show_markers:
+            for T, idx in zip(time_arrays, idxs):
+                if valid[idx]:
+                    plt.plot(f_arr[idx], hc_arr[idx], 'o', color = 'black', markersize = 3, zorder = 6)
+
+    # sensitivity curve overlay
+    f = np.logspace(-4, -1, 500)
+    plt.loglog(f, h_det(f), lw=2, color='green', label="Detector")
+    #plt.loglog(f, analytical_sensitivity(f), lw=2, color='green', label="Detector")
+    #plt.xlim(1e-4, 1e-1) 
+    #plt.ylim(1e-21, 1e-19)
+    plt.xlabel("Frequency [Hz]")
+    plt.ylabel("Characteristic Strain")
+    plt.grid(True, which="both", alpha=0.25)
+    plt.title(r"$\frac{10}{10^6}$ Mass ratio at D = 1 Gpc with $e_{LSO} = 0.3$")
+    plt.legend()
+    plt.show()
+    
+def plot_analytical():
+    f = np.logspace(-5, -1, 1000)   # Hz
+    S = analytical_sensitivity(f)
+
+    plt.figure(figsize=(7,5))
+    plt.loglog(f, S, lw=2)
+    plt.xlabel("Frequency [Hz]")
+    plt.ylabel(r"$S_n(f)$")
+    plt.grid(True, which="both", alpha=0.3)
+    plt.show()
+
     
 def plot_SNR_PN(phi_arr, nu_arr, gamma_arr, e_arr, t_arr, p, N_harm_show=10, N_harm_sum=1000, step = 1000):
     
@@ -184,7 +265,7 @@ def plot_nu_LSO(p):
 
         # integrate backwards in time from t=0 (LSO) to earlier times (negative)
         t_span = (0.0, -10.0 * yr)  # ~10 years backward
-        sol = integrate_trajectory(deriv_PN, y0, t_span, p=p)#solve_ivp(deriv_PN, t_span, y0, rtol=1e-9, atol=1e-12, max_step=1e5)
+        sol = integrate_trajectory(deriv_PN_reduced, y0, t_span, p=p)#solve_ivp(deriv_PN, t_span, y0, rtol=1e-9, atol=1e-12, max_step=1e5)
 
         
         t_array = sol.t

@@ -1,11 +1,12 @@
+from .constants import G, c, D
 class EMRIParams:
-    def __init__(self, M_bh, mu, X=0.0, lambda_var=0.0):
+    def __init__(self, M_bh, mu, X=0.0, lambda_var=0.0, D = D):
         """
         M_bh, m: masses in SI units
         X: spin parameter S/M^2
         lambda_var: spin-orbit misalignment angle (radians)
         """
-        from .constants import G, c
+
 
         self.M_si = M_bh
         self.mu_si = mu
@@ -17,3 +18,4 @@ class EMRIParams:
 
         self.X = X
         self.lambda_var = lambda_var
+        self.D = D

@@ -35,6 +35,6 @@ def integrate_trajectory(func, y0, t_span, termination_event=None, p=None):
         t_span,
         y0,
         events=[event_func],   # ← must be a list!
-        rtol=1e-9,
+        method = "Radau", rtol=1e-9,
         atol=1e-12
     )
